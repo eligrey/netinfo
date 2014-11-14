@@ -266,40 +266,40 @@ If the <a>underlying connection technology</a> changes (in either connection typ
   function populateTable(data) {
     var tbody = document.querySelector("#max-downlink-table > tbody"),
       head = document.querySelector("#max-downlink-table > thead"),
-      headsize = head.rows[0].children.length,
-      trs = "";
-    //for each entry in the JSON
-    for (var connection in data) {
-      var connectionTypes = data[connection];
-      trs += "<tr>"
-      trs += (connectionTypes.length > 1) ?
-        "<td rowspan=" + connectionTypes.length + ">" :
-        "<td>"
-      trs += "<a href='#idl-def-ConnectionType." + connection + "'>"
-      trs += connection + "</a>"
-      trs += "</td>";
+      headsize = head.rows[0].children.length;
+    var trs = Object.getOwnPropertyNames(data).sort().map(
+ 			function(connectionType){
+ 				var tr = document.createElement("tr");
+	      var conTypeTd = document.createElement("td");
+	      conTypeTd.rowspan = connectionTypes.length;
+	      var a = document.createElement("a");
+	      a.href = "#idl-def-ConnectionType." + connection;
+	      conTypeTd.appendChild(a);
+	      tr.appendChild(conTypeTd);
 
-      //Tell reader we don't have any data for connection
-      if (connectionTypes.length === 0) {
-        trs += "<td " + "colspan=" + headsize + ">"
-        trs += "No data available for this"
-        trs += " <a title='connection types'>connection type</a>.</td>"
-      } else {
-        //loop through and populate the table
-        for (var j = 0; j < connectionTypes.length; j++) {
-          var conObj = connectionTypes[j];
-          if (j) {
-            trs += "<tr>"
-          }
-          trs += "<td>" + conObj.name + "</td>"
-          trs += "<td>" + conObj.version + "</td>"
-          trs += "<td>" + conObj.max.downlink + "</td>"
-          trs += "</tr>"
-        }
-      }
-    }
+	      //Tell reader we don't have any data for connection
+	      var connectionDetailsTd = document.createElement("td");
+	      tr.appendChild(connectionDetailsTd);
+	      if (connectionTypes.length === 0) {
+	        connectionDetailsTd.colspan = headsize;
+	        var html = "No data available for this"
+	                 + " <a title='connection types'>connection type</a>."
+	        connectionDetailsTd.innerHTML = html;
+	      } else {
+	        //loop through and populate the table
+	        connectionTypes.sort().map(function(type){
+	          var conObj = connectionTypes[type];
+	          var nameTd = document.createElement("td");
+	          var versionTd = document.createElement("td");
+	          var maxDownlink = document.createElement("td");
+	          nameTd.innerHTML = conObj.name;
+	          versionTd.innerHTML = conObj.version;
+	          maxDownlink.innerHTML = conObj.max.downlink;
+	        });
+	      }
+ 			}
+    );
     //finally, add the data
     tbody.innerHTML = trs;
-  }
 }());
 </script>
